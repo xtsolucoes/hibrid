@@ -8,7 +8,7 @@
         }
     ],
 	"require": {
-		"nfephp-org/nfephp": "develop"
+		"nfephp-org/nfephp": "dev-develop"
 	},
 	"autoload": {
         "psr-4": {
@@ -18,8 +18,7 @@
 	"repositories": [
 		{
 			"url": "https://github.com/nfephp-org/nfephp.git",
-			"type": "git",
-			"reference":"develop"
+			"type": "git"
 		}
 	]
 }
