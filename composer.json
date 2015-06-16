@@ -8,7 +8,7 @@
         }
     ],
 	"require": {
-		"nfephp-org/nfephp": "dev-develop"
+		"nfephp-org/nfephp": "develop"
 	},
 	"autoload": {
         "psr-4": {
