@@ -1,0 +1,20 @@
+{
+    "name": "rfweb/libnfe",
+    "description": "LibNFe",
+    "authors": [
+        {
+            "name": "Roberson Faria",
+            "email": "roberson.faria@gmail.com"
+        }
+    ],
+	"require": {
+		"nfephp-org/nfephp": "dev-develop"
+	},
+	"repositories": [
+		{
+			"url": "https://github.com/nfephp-org/nfephp.git",
+			"type": "git",
+			"reference":"develop"
+		}
+	]
+}
