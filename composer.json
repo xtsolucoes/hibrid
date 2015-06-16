@@ -8,8 +8,14 @@
         }
     ],
 	"require": {
-		"nfephp-org/nfephp": "dev-develop"
+		"nfephp-org/nfephp": "dev-develop",
+		"php": ">=5.3.*",
 	},
+	"autoload": {
+        "psr-4": {
+            "RfWeb\\LibNFe\\": "src/"
+        }
+    },
 	"repositories": [
 		{
 			"url": "https://github.com/nfephp-org/nfephp.git",
