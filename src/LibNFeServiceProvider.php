@@ -7,7 +7,7 @@ class LibNFeServiceProvider extends ServiceProvider {
 
 	public function boot(){
 		$this->publishes([
-				__DIR__.'../config/LibNFe.php' => config_path('LibNFe.php'),
+				__DIR__.'/../config/LibNFe.php' => config_path('LibNFe.php'),
 		]);
 	}
 	
