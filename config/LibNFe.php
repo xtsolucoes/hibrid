@@ -1,6 +1,6 @@
 <?php
 return [
-	"dirProjeto"=>"/var/www/pingpongs/",
+	"dirProjeto"=>"/var/www/pingpong/",
 	"tpAmb"=>2,
 	"pathXmlUrlFileNFe"=>"{dirProjeto}arquivos/config/nfe_ws3_mod55.xml",
 	"pathXmlUrlFileCTe"=>"{dirProjeto}arquivos/config/cte_ws2.xml",

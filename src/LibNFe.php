@@ -44,9 +44,8 @@ class LibNFe{
 			if(count($result) > 0){
 				foreach($result as $config){
 					$nfe = new ToolsNFe($this->setConfig($config));
-					dd($nfe);
-					$xml = $nfe->sefazDistDFe('AN', $tpAmb, $cnpj, $ultNSU, $numNSU, $aResposta);
-					dd($this->config);
+					$xml = $nfe->sefazDistDFe('AN', $this->dadosConfig["tpAmb"], $this->dadosConfig["cnpj"]);
+					dd($xml);
 					//$this->connectCnpj();
 					//$this->getListNFe();
 					//$this->disconnectCnpj();
@@ -73,7 +72,7 @@ class LibNFe{
 		$dados["customer_cnpj"] = str_pad($dados["customer_cnpj"], 14, "0", STR_PAD_LEFT);
 		$config["atualizacao"] = date("Y-m-d H:i:s");
 		$config["razaosocial"] = $dados["customer_razao_social"];
-		$config["siglaUF"] = $dados["customer_uf"];
+		$config["siglaUF"] = 'PR';//$dados["customer_uf"];
 		$config["cnpj"] = $dados["customer_cnpj"];
 		$config["certPfxName"] = $dados["customer_cnpj"].".pfx";
 		$config["certPassword"] = "123456";
@@ -86,6 +85,7 @@ class LibNFe{
 		$config["pathXmlUrlFileNFSe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileNFSe"]);
 		$config["pathCertsFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathCertsFiles"]).$dados["customer_cnpj"]."/";
 		
+		$this->dadosConfig = $config;
 		return json_encode($config);
 	}
 	
