@@ -1,10 +1,10 @@
 <?php
 return [
-	"dirProjeto"=>"\/var\/www\/pingpong\/",
+	"dirProjeto"=>"/var/www/pingpongs/",
 	"tpAmb"=>2,
-	"pathXmlUrlFileNFe"=>"{dirProjeto}arquivos\/config\/nfe_ws3_mod55.xml",
-	"pathXmlUrlFileCTe"=>"{dirProjeto}arquivos\/config\/cte_ws2.xml",
-	"pathXmlUrlFileMDFe"=>"{dirProjeto}arquivos\/config\/mdfe_ws1.xml",
+	"pathXmlUrlFileNFe"=>"{dirProjeto}arquivos/config/nfe_ws3_mod55.xml",
+	"pathXmlUrlFileCTe"=>"{dirProjeto}arquivos/config/cte_ws2.xml",
+	"pathXmlUrlFileMDFe"=>"{dirProjeto}arquivos/config/mdfe_ws1.xml",
 	"pathXmlUrlFileCLe"=>"",
 	"pathXmlUrlFileNFSe"=>"",
 	"pathNFeFiles"=>"",
@@ -12,7 +12,7 @@ return [
 	"pathMDFeFiles"=>"",
 	"pathCLeFiles"=>"",
 	"pathNFSeFiles"=>"",
-	"pathCertsFiles"=>"{dirProjeto}arquivos\/certs\/",
+	"pathCertsFiles"=>"{dirProjeto}arquivos/certs/",
 	"siteUrl"=>"",
 	"schemesNFe"=>"PL_008f",
 	"schemesCTe"=>"PL_CTe_200",
