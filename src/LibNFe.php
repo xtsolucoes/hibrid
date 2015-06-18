@@ -43,8 +43,8 @@ class LibNFe{
 			$result = Customer::all()->toArray();
 			if(count($result) > 0){
 				foreach($result as $config){
-					$this->setConfig($config);
-					$nfe = new ToolsNFe('../../config/config.json');
+					$nfe = new ToolsNFe($this->setConfig($config));
+					dd($nfe);
 					$xml = $nfe->sefazDistDFe('AN', $tpAmb, $cnpj, $ultNSU, $numNSU, $aResposta);
 					dd($this->config);
 					//$this->connectCnpj();
@@ -67,43 +67,26 @@ class LibNFe{
 	 * @param 	Array $config
 	 * @return	grava todos os dados de configuracoes em $this->dadosConfig para uso no restante da classe.
 	 */
-	private function setConfig(Array $config){
+	private function setConfig(Array $dados){
 		//Dados de configuracao ambiente e certificado
-		$dados["ambiente"] 		= $config["nfeconfig_ambiente"];
-		$dados["certName"] 		= $config["nfeconfig_pfx"];
-		$dados["keyPass"] 		= $config["nfeconfig_key_pass"];
-		$dados["passPhrase"] 	= $config["nfeconfig_pass_phrase"];
-		$dados["arquivosDir"] 	= $config["nfeconfig_arquivos_dir"];
-		$dados["arquivoURLxml"] = $config["nfeconfig_arquivo_url_xml"];
-		$dados["baseurl"] 		= $config["nfeconfig_base_url"];
-		$dados["danfeLogo"] 	= $config["nfeconfig_danfe_logo"];
-		$dados["danfeLogoPos"] 	= $config["nfeconfig_danfe_logo_pos"];
-		$dados["danfeFormato"] 	= $config["nfeconfig_danfe_formato"];
-		$dados["danfePapel"] 	= $config["nfeconfig_danfe_papel"];
-		$dados["danfeCanhoto"] 	= $config["nfeconfig_danfe_canhoto"];
-		$dados["danfeFonte"] 	= $config["nfeconfig_danfe_font"];
-		$dados["danfePrinter"] 	= $config["nfeconfig_danfe_printer"];
-		$dados["schemes"] 		= $config["nfeconfig_schemes"];
-		$dados["proxyIP"] 		= $config["nfeconfig_proxy_ip"];
-		$dados["mailFROM"] 		= $config["nfeconfig_mail_from"];
-	
-		//Dados empresa
-		$dados["empresa"]		= $config["nfeconfig_empresa"];
-		$dados["UF"]			= $config["nfeconfig_uf"];
-		$dados["cUF"]			= $config["nfeconfig_cuf"];
-		$dados["cnpj"]			= (String)$config["nfeconfig_cnpj"];
-	
-		//Dados de controle da classe
-		$dados["customer_id"]	= $config["nfeconfig_customer_id"];
-		$dados["ultNSU"]		= $config["nfeconfig_ultnsu"];
-		$dados["modSOAP"] 		= '2'; //usando cURL
-		$dados["indNFe"] 		= '0';
-		$dados["indEmi"] 		= '1';
-		$dados["AN"] 			= TRUE;
-		$dados["indCon"] 		= 1;
-	
-		//Grava no atributo da classe
-		$this->dadosConfig 		= $dados;
+		$config = config('LibNFe');
+		$dados["customer_cnpj"] = str_pad($dados["customer_cnpj"], 14, "0", STR_PAD_LEFT);
+		$config["atualizacao"] = date("Y-m-d H:i:s");
+		$config["razaosocial"] = $dados["customer_razao_social"];
+		$config["siglaUF"] = $dados["customer_uf"];
+		$config["cnpj"] = $dados["customer_cnpj"];
+		$config["certPfxName"] = $dados["customer_cnpj"].".pfx";
+		$config["certPassword"] = "123456";
+		$config["certPhrase"] = "";
+		
+		$config["pathXmlUrlFileNFe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileNFe"]);
+		$config["pathXmlUrlFileCTe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileCTe"]);
+		$config["pathXmlUrlFileMDFe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileMDFe"]);
+		$config["pathXmlUrlFileCLe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileCLe"]);
+		$config["pathXmlUrlFileNFSe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileNFSe"]);
+		$config["pathCertsFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathCertsFiles"]).$dados["customer_cnpj"]."/";
+		
+		return json_encode($config);
 	}
 	
 }
