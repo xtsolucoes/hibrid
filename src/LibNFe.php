@@ -84,6 +84,8 @@ class LibNFe{
 		$config["pathXmlUrlFileCLe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileCLe"]);
 		$config["pathXmlUrlFileNFSe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileNFSe"]);
 		$config["pathCertsFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathCertsFiles"]).$dados["customer_cnpj"]."/";
+		$config["pathNFeFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathNFeFiles"]).$dados["customer_cnpj"]."";
+		//dd($config["pathNFeFiles"]);
 		
 		$this->dadosConfig = $config;
 		return json_encode($config);
