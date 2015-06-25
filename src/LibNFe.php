@@ -47,7 +47,7 @@ class LibNFe{
 			if(count($result) > 0){
 				foreach($result as $config){
 					$operation =  new Operation();
-					$ultnsu = $operation->where('resnfe_id_customer',$config['id'])->max('resnfe_nsu');
+					$ultnsu = $operation->where('id_customer',$config['id'])->max('resnfe_nsu');
 					$nfe = new ToolsNFe($this->setConfig($config));
 					$nfe->sefazDistDFe('AN', $this->dadosConfig["tpAmb"], $this->dadosConfig["cnpj"], $ultnsu,0, $this->retorno, false);
 					//dd($this->retorno);
@@ -60,7 +60,7 @@ class LibNFe{
 								$doc = $xml->CPF;
 							}
 							Operation::create([
-								'resnfe_id_customer' =>  $config['id'],
+								'id_customer' =>  $config['id'],
 								'resnfe_nsu' =>  $dados['NSU'],
 								'resnfe_tpdoc' =>  "1",
 								'resnfe_dhrecbtolocal' =>  date('Y-m-d H:i:s'),
