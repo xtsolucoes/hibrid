@@ -3,6 +3,8 @@ namespace RfWeb\LibNFe;
 
 use NFePHP\NFe\ToolsNFe;
 use App\Customer;
+use App\Operation;
+use App\App;
 /**
  * Biblioteca Nota Fiscal Eletronica
  *
@@ -23,6 +25,7 @@ use App\Customer;
 class LibNFe{
 	
 	private $dadosConfig = Array();
+	private $retorno = null;
 	
 	/**
 	 *  Faz a consulta no SEFAZ para cada uma das empresas cadastradas
@@ -43,18 +46,104 @@ class LibNFe{
 			$result = Customer::all()->toArray();
 			if(count($result) > 0){
 				foreach($result as $config){
+					$operation =  new Operation();
+					$ultnsu = $operation->max('resnfe_nsu');
 					$nfe = new ToolsNFe($this->setConfig($config));
-					$xml = $nfe->sefazDistDFe('AN', $this->dadosConfig["tpAmb"], $this->dadosConfig["cnpj"]);
-					dd($xml);
-					//$this->connectCnpj();
-					//$this->getListNFe();
-					//$this->disconnectCnpj();
+					$nfe->sefazDistDFe('AN', $this->dadosConfig["tpAmb"], $this->dadosConfig["cnpj"], $ultnsu,0, $this->retorno, false);
+					//dd($this->retorno);
+					foreach($this->retorno['aDoc'] as $dados){
+						if($dados["schema"] == "resNFe_v1.00.xsd"){
+							$xml = simplexml_load_string ($dados['doc']);
+							if(strlen($xml->CNPJ) > 0){
+								$doc = $xml->CNPJ;
+							}else{
+								$doc = $xml->CPF;
+							}
+							Operation::create([
+								'resnfe_id_customer' =>  $config['id'],
+								'resnfe_nsu' =>  $dados['NSU'],
+								'resnfe_tpdoc' =>  "1",
+								'resnfe_dhrecbtolocal' =>  date('Y-m-d H:i:s'),
+								'resnfe_cnpj_cpf' =>  $doc,
+								'resnfe_ie' =>  $xml->IE,
+								'resnfe_xnome' =>  $xml->xNome,
+								'resnfe_chnfe' =>  $xml->chNFe,
+								'resnfe_demi' =>  date('Y-m-d H:i:s',strtotime($xml->dhEmi)),
+								'resnfe_tpnf' =>  $xml->tpNF,
+								'resnfe_csitnfe' =>  $xml->cSitNFe,
+	// 							'resnfe_csitconf' =>  $xml->,
+								'resnfe_dhrecbto' =>  date('Y-m-d H:i:s',strtotime($xml->dhRecbto)),
+								'resnfe_vnf' =>  $xml->vNF,
+	// 							'rescce_dhevento' =>  $xml->,
+	// 							'rescce_tpevento' =>  $xml->,
+	// 							'rescce_nseqevento' =>  $xml->,
+	// 							'rescce_descevento' =>  $xml->,
+	// 							'rescce_xcorrecao' =>  $xml->,
+	// 							'rescce_dhrecbtodefault' =>  $xml->,
+								'resnfe_xml' =>  addslashes($dados['doc']),
+							]);
+							echo "res = ".$xml->chNFe."<br>";
+						}elseif($dados["schema"] == "procNFe_v1.00.xsd"){
+// 							dd($dados);
+							$xml = simplexml_load_string ($dados['doc']);
+// 							dd($xml);
+							echo "proc = ".$xml->protNFe->infProt->chNFe."<br>";
+						}else{
+							print_r($dados);
+							echo "<br>";
+						}
+					}
 				}
 			}
+			dd("acabou");
 		} catch (Exception $e) {
 			Log::error("Erro Exception: " . $e->getMessage());
 			exit;
 		}
+	}
+	
+	/**
+	 * Metodo que recupera do SEFAZ e disponibiliza para download os arquivos
+	 *
+	 * @name 	downloadXml
+	 * @access	public
+	 * @author	Roberson Faria
+	 * @param 	Numeric $customer_id
+	 * @param 	Numeric $chNFe
+	 */
+	public function downloadXml($customer_id, $chNFe){
+		try{
+			$customer = Customer::find($customer_id)->toArray();
+			$nfe = new ToolsNFe($this->setConfig($customer));
+			echo "chNfe = ".$chNFe."<br>";
+			echo "tpAmb = ".$this->dadosConfig["tpAmb"]."<br>";
+			echo "customer_cnpj = ".$customer['customer_cnpj']."<br>";
+			$resp = $nfe->sefazDownload($chNFe, $this->dadosConfig["tpAmb"], '0'.$customer['customer_cnpj'], $aResposta);
+			dd($aResposta);
+		} catch (nfephpException $e){
+			$txt = "Erro nfephpException: " . $e->getMessage();
+			$this->log->file($txt);
+			die();
+		}
+	}
+	
+	/**
+	 * Metodo para envio da manifestacao para a SEFAZ
+	 *
+	 * @name	setManifesto
+	 * @access	public
+	 * @author	Roberson Faria
+	 * @param 	Numeric $customer_id
+	 * @param 	Numeric $chNFe
+	 * @param 	Numeric $operacao
+	 * @param 	String $justificativa
+	 * @return	Json $respostaSefaz
+	 */
+	public function setManifesto($customer_id, $chNFe, $operacao, $xJust = ""){
+		$customer = Customer::find($customer_id)->toArray();
+		$nfe = new ToolsNFe($this->setConfig($customer));
+		$xml = $nfe->sefazManifesta($chNFe, $this->dadosConfig["tpAmb"], $xJust = '', $tpEvento = '', $aResposta);
+		dd($aResposta);
 	}
 	
 	/**
@@ -84,8 +173,9 @@ class LibNFe{
 		$config["pathXmlUrlFileCLe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileCLe"]);
 		$config["pathXmlUrlFileNFSe"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathXmlUrlFileNFSe"]);
 		$config["pathCertsFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathCertsFiles"]).$dados["customer_cnpj"]."/";
-		$config["pathNFeFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathNFeFiles"]).$dados["customer_cnpj"]."";
-		//dd($config["pathNFeFiles"]);
+		
+		$config["pathNFeFiles"] = $config["dirProjeto"]."arquivos/".$dados["customer_cnpj"]."";
+// 		dd($config["pathNFeFiles"]);
 		
 		$this->dadosConfig = $config;
 		return json_encode($config);

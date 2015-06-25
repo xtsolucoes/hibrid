@@ -1,8 +1,7 @@
 <?php
 return [
 	"dirProjeto"=>"/var/www/pingpong/",
-	"tpAmb"=>2,
-	"pathNFeFiles" => "{dirProjeto}arquivos/",
+	"tpAmb"=>1,
 	"pathXmlUrlFileNFe"=>"nfe_ws3_mod55.xml",
 	"pathXmlUrlFileCTe"=>"{dirProjeto}arquivos/config/cte_ws2.xml",
 	"pathXmlUrlFileMDFe"=>"{dirProjeto}arquivos/config/mdfe_ws1.xml",
