@@ -202,6 +202,8 @@ class LibNFe{
 		$config["pathNFeFiles"] = $config["dirProjeto"]."arquivos/".$dados["customer_cnpj"]."";
 		if (!file_exists($config["pathNFeFiles"])) {
 			mkdir($config["pathNFeFiles"], 0777);
+			mkdir($config["pathNFeFiles"]."/producao", 0777);
+			mkdir($config["pathNFeFiles"]."/homologacao", 0777);
 		}
 // 		dd($config["pathNFeFiles"]);
 		
