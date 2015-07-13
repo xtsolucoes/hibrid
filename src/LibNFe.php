@@ -203,7 +203,9 @@ class LibNFe{
 		if (!file_exists($config["pathNFeFiles"])) {
 			mkdir($config["pathNFeFiles"], 0777);
 			mkdir($config["pathNFeFiles"]."/producao", 0777);
+			mkdir($config["pathNFeFiles"]."/producao/temporarias", 0777);
 			mkdir($config["pathNFeFiles"]."/homologacao", 0777);
+			mkdir($config["pathNFeFiles"]."/homologacao/temporarias", 0777);
 		}
 // 		dd($config["pathNFeFiles"]);
 		
