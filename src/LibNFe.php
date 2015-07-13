@@ -5,6 +5,7 @@ use NFePHP\NFe\ToolsNFe;
 use App\Customer;
 use App\Operation;
 use App\App;
+use Log;
 /**
  * Biblioteca Nota Fiscal Eletronica
  *
@@ -50,7 +51,7 @@ class LibNFe{
 					$ultnsu = $operation->where('id_customer',$config['id'])->max('resnfe_nsu');
 					$nfe = new ToolsNFe($this->setConfig($config));
 					$nfe->sefazDistDFe('AN', $this->dadosConfig["tpAmb"], $this->dadosConfig["cnpj"], $ultnsu,0, $this->retorno, false);
-					//dd($this->retorno);
+					dd($this->retorno);
 					foreach($this->retorno['aDoc'] as $dados){
 						if($dados["schema"] == "resNFe_v1.00.xsd"){
 							$xml = simplexml_load_string ($dados['doc']);
@@ -82,22 +83,25 @@ class LibNFe{
 	// 							'rescce_dhrecbtodefault' =>  $xml->,
 								'resnfe_xml' =>  addslashes($dados['doc']),
 							]);
-							echo "res = ".$xml->chNFe."<br>";
+							if($xml->cSitNFe == 4 or $xml->cSitNFe == 1){
+								$this->downloadXml($config['id'], $xml->chNFe);
+							}
+// 							echo "res = ".$xml->chNFe."<br>";
 						}elseif($dados["schema"] == "procNFe_v1.00.xsd"){
 // 							dd($dados);
-							$xml = simplexml_load_string ($dados['doc']);
+// 							$xml = simplexml_load_string ($dados['doc']);
 // 							dd($xml);
-							echo "proc = ".$xml->protNFe->infProt->chNFe."<br>";
+// 							echo "proc = ".$xml->protNFe->infProt->chNFe."<br>";
 						}else{
-							print_r($dados);
-							echo "<br>";
+// 							print_r($dados);
+// 							echo "<br>";
 						}
 					}
 				}
 			}
-			dd("acabou");
+// 			dd("acabou");
 		} catch (Exception $e) {
-			Log::error("Erro Exception: " . $e->getMessage());
+			Log::warning("Erro LibNfe Exception: " . $e->getMessage());
 			exit;
 		}
 	}
@@ -115,15 +119,14 @@ class LibNFe{
 		try{
 			$customer = Customer::find($customer_id)->toArray();
 			$nfe = new ToolsNFe($this->setConfig($customer));
-			echo "chNfe = ".$chNFe."<br>";
-			echo "tpAmb = ".$this->dadosConfig["tpAmb"]."<br>";
-			echo "customer_cnpj = ".$customer['customer_cnpj']."<br>";
+// 			echo "chNfe = ".$chNFe."<br>";
+// 			echo "tpAmb = ".$this->dadosConfig["tpAmb"]."<br>";
+// 			echo "customer_cnpj = ".$customer['customer_cnpj']."<br>";
 			$resp = $nfe->sefazDownload($chNFe, $this->dadosConfig["tpAmb"], '0'.$customer['customer_cnpj'], $aResposta);
-			dd($aResposta);
-		} catch (nfephpException $e){
-			$txt = "Erro nfephpException: " . $e->getMessage();
-			$this->log->file($txt);
-			die();
+			return $aResposta;
+		} catch (Exception $e) {
+			Log::warning("Erro LibNfe Exception: " . $e->getMessage());
+			exit;
 		}
 	}
 	
@@ -143,7 +146,29 @@ class LibNFe{
 		$customer = Customer::find($customer_id)->toArray();
 		$nfe = new ToolsNFe($this->setConfig($customer));
 		$xml = $nfe->sefazManifesta($chNFe, $this->dadosConfig["tpAmb"], $xJust = '', $tpEvento = '', $aResposta);
-		dd($aResposta);
+		return $aResposta;
+	}
+		
+	/**
+	 *Método que faz o download da DANFE
+	 *
+	 * @name 	gerarDANFE
+	 * @access	public
+	 * @author	Roberson Faria
+	 * @param 	Numeric $customer_id
+	 * @param 	String $arquivo Caminho para o arquivo xml
+	 * @param   Char $tipoDownload Defini o tipo do download do arquivo "I" - abre o pdf no browser "D" - faz o download do PDF para a maquina do cliente.
+	 */
+	public function printDanfe($arquivo, $tipoDownload = "I"){
+		$dxml = base64_decode($xml);
+		$logo = 'images/logo.jpg';
+		if (strpos($xml, 'recebidas')) {
+			$logo = '';
+		}
+		$docxml = FilesFolders::readFile($xml);
+		$danfe = new Danfe($docxml, 'P', 'A4', $logo, $tipoDownload, '');
+		$id = $danfe->montaDANFE();
+		$danfe->printDANFE($id.'.pdf', $tipoDownload);
 	}
 	
 	/**
