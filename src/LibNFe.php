@@ -51,7 +51,7 @@ class LibNFe{
 					$ultnsu = $operation->where('id_customer',$config['id'])->max('resnfe_nsu');
 					$nfe = new ToolsNFe($this->setConfig($config));
 					$nfe->sefazDistDFe('AN', $this->dadosConfig["tpAmb"], $this->dadosConfig["cnpj"], $ultnsu,0, $this->retorno, false);
-					dd($this->retorno);
+// 					dd($this->retorno);
 					foreach($this->retorno['aDoc'] as $dados){
 						if($dados["schema"] == "resNFe_v1.00.xsd"){
 							$xml = simplexml_load_string ($dados['doc']);
@@ -200,6 +200,9 @@ class LibNFe{
 		$config["pathCertsFiles"] = str_replace("{dirProjeto}",$config["dirProjeto"],$config["pathCertsFiles"]).$dados["customer_cnpj"]."/";
 		
 		$config["pathNFeFiles"] = $config["dirProjeto"]."arquivos/".$dados["customer_cnpj"]."";
+		if (!file_exists($config["pathNFeFiles"])) {
+			mkdir($config["pathNFeFiles"], 0777);
+		}
 // 		dd($config["pathNFeFiles"]);
 		
 		$this->dadosConfig = $config;
