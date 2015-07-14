@@ -2,10 +2,12 @@
 namespace RfWeb\LibNFe;
 
 use NFePHP\NFe\ToolsNFe;
+use NFePHP\Extras\Danfe;
 use App\Customer;
 use App\Operation;
 use App\App;
 use Log;
+
 /**
  * Biblioteca Nota Fiscal Eletronica
  *
