@@ -160,12 +160,12 @@ class LibNFe{
 	 * @param   Char $tipoDownload Defini o tipo do download do arquivo "I" - abre o pdf no browser "D" - faz o download do PDF para a maquina do cliente.
 	 */
 	public function printDanfe($arquivo, $tipoDownload = "I"){
-		$dxml = base64_decode($xml);
+		$dxml = base64_decode($arquivo);
 		$logo = 'images/logo.jpg';
-		if (strpos($xml, 'recebidas')) {
+		if (strpos($arquivo, 'recebidas')) {
 			$logo = '';
 		}
-		$docxml = FilesFolders::readFile($xml);
+		$docxml = FilesFolders::readFile($arquivo);
 		$danfe = new Danfe($docxml, 'P', 'A4', $logo, $tipoDownload, '');
 		$id = $danfe->montaDANFE();
 		$danfe->printDANFE($id.'.pdf', $tipoDownload);
