@@ -1,9 +1,9 @@
 <?php
-//teste
 namespace RfWeb\LibNFe;
 
 use NFePHP\NFe\ToolsNFe;
 use NFePHP\Extras\Danfe;
+use NFePHP\Common\Files\FilesFolders;
 use App\Customer;
 use App\Operation;
 use App\App;
