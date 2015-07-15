@@ -1,4 +1,5 @@
 <?php
+//teste
 namespace RfWeb\LibNFe;
 
 use NFePHP\NFe\ToolsNFe;
